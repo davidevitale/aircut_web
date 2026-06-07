@@ -1,0 +1,36 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AirCut">
+  <defs>
+    <linearGradient id="acg" x1="110" y1="402" x2="430" y2="150" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F0AACB"/>
+      <stop offset="0.52" stop-color="#BEB2E6"/>
+      <stop offset="1" stop-color="#91BBEE"/>
+    </linearGradient>
+  </defs>
+  <!-- Colibrì stilizzato: corpo che si assottiglia in becco, una sola ala alzata -->
+  <g fill="url(#acg)">
+    <!-- Corpo + becco + coda -->
+    <path d="M250 250
+             C 300 210, 360 196, 416 206
+             C 430 209, 432 220, 420 226
+             L 372 250
+             C 372 250, 414 252, 430 258
+             C 440 262, 438 274, 428 278
+             C 392 296, 350 304, 312 300
+             C 300 348, 266 388, 214 412
+             C 150 440, 96 452, 78 452
+             C 70 452, 68 442, 74 438
+             L 224 300
+             C 200 296, 180 282, 172 258
+             C 168 246, 178 238, 188 244
+             C 206 254, 226 256, 250 250 Z"/>
+    <!-- Occhio (foro) -->
+    <circle cx="338" cy="244" r="13" fill="#0A0A0F"/>
+    <!-- Ala alzata (forma a freccia/A) -->
+    <path d="M150 250
+             C 150 250, 196 150, 238 96
+             C 246 86, 260 90, 260 104
+             C 258 168, 236 226, 196 268
+             C 184 280, 162 274, 152 262
+             C 149 258, 149 254, 150 250 Z"/>
+  </g>
+</svg>

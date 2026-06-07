@@ -1,0 +1,2 @@
+-- Deprecato: il backend e migrato a Firebase/Firestore.
+-- Vedi firestore.rules e firestore/DATA_MODEL.md
