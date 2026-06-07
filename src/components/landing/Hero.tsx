@@ -55,9 +55,9 @@ export function Hero() {
             marginInline: "auto",
           }}
         >
-          Vieni scelto per
+          Fai tagli di merda?
           <br />
-          quello che <span className="text-gradient">sai fare.</span>
+          <span className="text-gradient">Non ti vogliamo.</span>
         </motion.h1>
 
         <motion.p
@@ -71,27 +71,40 @@ export function Hero() {
             marginTop: 24,
           }}
         >
-          La piattaforma dove i clienti scelgono il professionista, non il salone.
-          Solo lavori reali. Solo i migliori.
+          Noi mettiamo in mostra il tuo talento.
+          I clienti ti invadono il negozio.
         </motion.p>
 
         <motion.div
           {...fade(0.24)}
           style={{
             display: "flex",
-            flexDirection: "column",
+            flexWrap: "wrap",
+            justifyContent: "center",
             alignItems: "center",
             gap: 14,
             marginTop: 38,
           }}
         >
+          <a href="#come-funziona" className="btn-secondary" style={{ fontSize: 17, padding: "16px 32px" }}>
+            Scopri di più
+          </a>
           <Link href="/iscriviti" className="btn-primary" style={{ fontSize: 17, padding: "16px 34px" }}>
-            Inizia gratis · 1 mese
+            Inizia gratis
           </Link>
-          <span style={{ color: "var(--text-tertiary)", fontSize: 14 }}>
-            Nessuna carta richiesta.
-          </span>
         </motion.div>
+
+        <motion.span
+          {...fade(0.3)}
+          style={{
+            display: "block",
+            color: "var(--text-tertiary)",
+            fontSize: 14,
+            marginTop: 18,
+          }}
+        >
+          Un mese gratis. Nessuna carta richiesta.
+        </motion.span>
       </div>
     </section>
   );

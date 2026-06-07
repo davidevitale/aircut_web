@@ -3,8 +3,8 @@ import { PageShell } from "@/components/PageShell";
 import { SignupForm } from "@/components/SignupForm";
 
 export const metadata: Metadata = {
-  title: "Crea il tuo profilo",
-  description: "Un mese gratis. Nessuna carta.",
+  title: "Fai vedere chi sei",
+  description: "Un mese gratis. Nessuna carta. Solo i tuoi tagli.",
 };
 
 export default function IscrivitiPage() {
@@ -19,10 +19,10 @@ export default function IscrivitiPage() {
             margin: 0,
           }}
         >
-          Crea il tuo profilo
+          Fai vedere chi sei
         </h1>
         <p style={{ color: "var(--text-secondary)", fontSize: 17, marginTop: 12 }}>
-          Un mese gratis. Nessuna carta.
+          Un mese gratis. Nessuna carta. Solo i tuoi tagli.
         </p>
       </div>
       <SignupForm />

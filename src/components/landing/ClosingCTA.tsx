@@ -28,7 +28,7 @@ export function ClosingCTA() {
                   marginInline: "auto",
                 }}
               >
-                Il tuo lavoro merita un palcoscenico.
+Se sei bravo, dimostralo. Se non lo sei, lascia stare.
               </h2>
               <div style={{ marginTop: 34 }}>
                 <Link

@@ -13,7 +13,7 @@ const included = [
   "Visual discovery",
   "Il tuo link di prenotazione",
   "Zero commissioni",
-  "Nessun vincolo, disdici quando vuoi",
+  "Zero vincoli: se non ti serve, te ne vai",
 ];
 
 export default function PrezziPage() {

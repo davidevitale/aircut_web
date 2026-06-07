@@ -4,24 +4,27 @@ import { Images, MagnifyingGlass, LinkSimple } from "@phosphor-icons/react/dist/
 const steps = [
   {
     Icon: Images,
-    title: "Pubblica il tuo portfolio",
-    body: "Lavori reali, su persone reali.",
+    title: "Pubblichi il tuo portfolio",
+    body: "Lavori reali, su persone reali, senza filtri. Le tue forbici, in vetrina.",
   },
   {
     Icon: MagnifyingGlass,
-    title: "Vieni scoperto",
-    body: "I clienti ti scelgono guardando i risultati.",
+    title: "Ti scelgono per i tuoi tagli",
+    body: "Il cliente vede il tuo lavoro e vuole proprio te. Non il salone accanto.",
   },
   {
     Icon: LinkSimple,
-    title: "Prenotano da te",
-    body: "Con il tuo link. Zero commissioni: incassi tu. Funziona con il gestionale che già usi.",
+    title: "Prenotano dal tuo link",
+    body: "Si aggancia al gestionale che già usi. Ogni euro resta tuo: noi non tratteniamo niente.",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section style={{ paddingBlock: "clamp(40px, 8vw, 90px)" }}>
+    <section
+      id="come-funziona"
+      style={{ paddingBlock: "clamp(40px, 8vw, 90px)", scrollMarginTop: 80 }}
+    >
       <div className="container">
         <Reveal>
           <h2
@@ -36,6 +39,22 @@ export function HowItWorks() {
           >
             Come funziona
           </h2>
+        </Reveal>
+
+        <Reveal delay={0.06}>
+          <p
+            style={{
+              color: "var(--text-secondary)",
+              fontSize: "clamp(1rem, 2.2vw, 1.2rem)",
+              lineHeight: 1.55,
+              textAlign: "center",
+              maxWidth: 560,
+              margin: "0 auto",
+            }}
+          >
+            Smetti di aspettare che entri qualcuno. Riempi la poltrona di clienti
+            che cercavano proprio te.
+          </p>
         </Reveal>
 
         <div
