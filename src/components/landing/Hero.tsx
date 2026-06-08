@@ -55,7 +55,7 @@ export function Hero() {
             marginInline: "auto",
           }}
         >
-          Fai tagli di merda?
+          Fai tagli di m***a?
           <br />
           <span className="text-gradient">Non ti vogliamo.</span>
         </motion.h1>
@@ -90,7 +90,7 @@ export function Hero() {
             Scopri di più
           </a>
           <Link href="/iscriviti" className="btn-primary" style={{ fontSize: 17, padding: "16px 34px" }}>
-            Inizia gratis
+            Dimostra chi sei
           </Link>
         </motion.div>
 

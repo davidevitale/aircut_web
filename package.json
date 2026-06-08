@@ -16,6 +16,7 @@
     "lightningcss": "^1.32.0",
     "motion": "^11.11.17",
     "next": "14.2.18",
+    "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "stripe": "^17.3.1"
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.9.0",
+    "@types/qrcode": "^1.5.5",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "tailwindcss": "^4.0.0",

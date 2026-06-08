@@ -1,36 +1,79 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  sendSignInLinkToEmail,
-  signInWithPhoneNumber,
-  RecaptchaVerifier,
-  type ConfirmationResult,
-} from "firebase/auth";
-import { getFirebaseAuth } from "@/lib/firebase/client";
+import { Eye, EyeSlash, Check, X, CircleNotch } from "@phosphor-icons/react";
+import { validateNickname } from "@/lib/nickname";
 
 type Method = "email" | "phone";
+
 type Errors = Partial<
-  Record<"contact" | "firstName" | "lastName" | "salonName" | "form", string>
+  Record<"contact" | "password" | "nickname" | "form", string>
 >;
+
+type NickState = "idle" | "checking" | "available" | "taken" | "invalid";
 
 export function SignupForm() {
   const router = useRouter();
   const [method, setMethod] = useState<Method>("email");
   const [contact, setContact] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [salonName, setSalonName] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [nickname, setNickname] = useState("");
+  const [nickState, setNickState] = useState<NickState>("idle");
+  const [nickReason, setNickReason] = useState<string>("");
   const [errors, setErrors] = useState<Errors>({});
   const [loading, setLoading] = useState(false);
-  const recaptchaRef = useRef<HTMLDivElement>(null);
+
+  // --- Controllo live del nickname (debounced) ---
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    const value = nickname.trim();
+    setErrors((p) => ({ ...p, nickname: undefined }));
+
+    if (!value) {
+      setNickState("idle");
+      setNickReason("");
+      return;
+    }
+    const formatError = validateNickname(value);
+    if (formatError) {
+      setNickState("invalid");
+      setNickReason(formatError);
+      return;
+    }
+
+    setNickState("checking");
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/check-nickname?value=${encodeURIComponent(value)}`
+        );
+        const data = await res.json();
+        if (data.available) {
+          setNickState("available");
+          setNickReason("");
+        } else {
+          setNickState("taken");
+          setNickReason(data.reason ?? "Nickname gia preso.");
+        }
+      } catch {
+        setNickState("idle");
+        setNickReason("");
+      }
+    }, 450);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [nickname]);
 
   function validate(): Errors {
     const e: Errors = {};
-    if (!firstName.trim()) e.firstName = "Inserisci il nome.";
-    if (!lastName.trim()) e.lastName = "Inserisci il cognome.";
-    if (!salonName.trim()) e.salonName = "Inserisci il nome del salone.";
+    const nickErr = validateNickname(nickname.trim());
+    if (nickErr) e.nickname = nickErr;
+    else if (nickState === "taken") e.nickname = "Nickname gia preso.";
     if (method === "email") {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.trim()))
         e.contact = "Inserisci un'email valida.";
@@ -38,6 +81,7 @@ export function SignupForm() {
       if (!/^\+?[0-9\s().-]{7,}$/.test(contact.trim()))
         e.contact = "Inserisci un numero di telefono valido.";
     }
+    if (password.length < 8) e.password = "Almeno 8 caratteri.";
     return e;
   }
 
@@ -48,21 +92,18 @@ export function SignupForm() {
     if (Object.keys(e).length > 0) return;
 
     setLoading(true);
-    const value = contact.trim();
-
     try {
-      // 1. Crea utente + profilo + trial lato server.
       const res = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           method,
-          contact: value,
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          salonName: salonName.trim(),
+          contact: contact.trim(),
+          password,
+          nickname: nickname.trim(),
         }),
       });
+
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         if (data?.errors) setErrors(data.errors);
@@ -71,33 +112,8 @@ export function SignupForm() {
         return;
       }
 
-      const auth = getFirebaseAuth();
-
-      if (method === "email") {
-        // 2a. Invia il magic link via Firebase Auth.
-        const url = `${window.location.origin}/verifica`;
-        await sendSignInLinkToEmail(auth, value, {
-          url,
-          handleCodeInApp: true,
-        });
-        window.localStorage.setItem("aircut_email_for_signin", value);
-        router.push(`/verifica?method=email&contact=${encodeURIComponent(value)}`);
-      } else {
-        // 2b. Invia OTP via SMS (richiede reCAPTCHA invisibile).
-        const verifier = new RecaptchaVerifier(auth, recaptchaRef.current!, {
-          size: "invisible",
-        });
-        const confirmation: ConfirmationResult = await signInWithPhoneNumber(
-          auth,
-          value.replace(/[\s().-]/g, ""),
-          verifier
-        );
-        // Conserva il confirmationResult per la pagina /verifica.
-        (window as any).__aircutConfirmation = confirmation;
-        window.sessionStorage.setItem("aircut_phone", value);
-        router.push(`/verifica?method=phone&contact=${encodeURIComponent(value)}`);
-      }
-    } catch (err: any) {
+      router.push("/scarica");
+    } catch (err) {
       console.error(err);
       setErrors({ form: "Invio non riuscito. Riprova tra poco." });
       setLoading(false);
@@ -106,6 +122,7 @@ export function SignupForm() {
 
   return (
     <form onSubmit={onSubmit} noValidate>
+      {/* Toggle metodo di contatto */}
       <div
         className="glass"
         role="tablist"
@@ -149,6 +166,57 @@ export function SignupForm() {
         })}
       </div>
 
+      <Field
+        label="Nickname"
+        error={errors.nickname}
+        hint={
+          nickState === "available"
+            ? "Disponibile"
+            : nickState === "taken" || nickState === "invalid"
+            ? nickReason
+            : "La tua identita pubblica, es. marco.tagli"
+        }
+        hintTone={
+          nickState === "available"
+            ? "ok"
+            : nickState === "taken" || nickState === "invalid"
+            ? "err"
+            : "muted"
+        }
+      >
+        <div style={{ position: "relative" }}>
+          <input
+            className="input"
+            autoComplete="username"
+            placeholder="marco.tagli"
+            value={nickname}
+            aria-invalid={
+              nickState === "taken" || nickState === "invalid" || !!errors.nickname
+            }
+            onChange={(e) => setNickname(e.target.value)}
+            style={{ paddingRight: 42 }}
+          />
+          <span
+            aria-hidden
+            style={{
+              position: "absolute",
+              right: 14,
+              top: "50%",
+              transform: "translateY(-50%)",
+              display: "inline-flex",
+            }}
+          >
+            {nickState === "checking" && (
+              <CircleNotch size={18} color="var(--text-tertiary)" className="nick-spin" />
+            )}
+            {nickState === "available" && <Check size={18} color="#86e0b8" weight="bold" />}
+            {(nickState === "taken" || nickState === "invalid") && (
+              <X size={18} color="#ff9a9a" weight="bold" />
+            )}
+          </span>
+        </div>
+      </Field>
+
       <Field label={method === "email" ? "Email" : "Telefono"} error={errors.contact}>
         <input
           className="input"
@@ -162,35 +230,42 @@ export function SignupForm() {
         />
       </Field>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        <Field label="Nome" error={errors.firstName}>
+      <Field
+        label="Password"
+        error={errors.password}
+        hint="Almeno 8 caratteri. La userai per accedere nell'app."
+        hintTone="muted"
+      >
+        <div style={{ position: "relative" }}>
           <input
             className="input"
-            autoComplete="given-name"
-            value={firstName}
-            aria-invalid={!!errors.firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            type={showPw ? "text" : "password"}
+            autoComplete="new-password"
+            value={password}
+            aria-invalid={!!errors.password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ paddingRight: 46 }}
           />
-        </Field>
-        <Field label="Cognome" error={errors.lastName}>
-          <input
-            className="input"
-            autoComplete="family-name"
-            value={lastName}
-            aria-invalid={!!errors.lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-        </Field>
-      </div>
-
-      <Field label="Nome del salone" error={errors.salonName}>
-        <input
-          className="input"
-          autoComplete="organization"
-          value={salonName}
-          aria-invalid={!!errors.salonName}
-          onChange={(e) => setSalonName(e.target.value)}
-        />
+          <button
+            type="button"
+            onClick={() => setShowPw((s) => !s)}
+            aria-label={showPw ? "Nascondi password" : "Mostra password"}
+            style={{
+              position: "absolute",
+              right: 8,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: 6,
+              display: "inline-flex",
+              color: "var(--text-tertiary)",
+            }}
+          >
+            {showPw ? <EyeSlash size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
       </Field>
 
       {errors.form && (
@@ -202,14 +277,11 @@ export function SignupForm() {
       <button
         type="submit"
         className="btn-primary"
-        disabled={loading}
+        disabled={loading || nickState === "checking"}
         style={{ width: "100%", marginTop: 8, fontSize: 16 }}
       >
-        {loading ? "Invio in corso..." : "Continua"}
+        {loading ? "Creazione account..." : "Crea account"}
       </button>
-
-      {/* contenitore reCAPTCHA invisibile per Phone Auth */}
-      <div ref={recaptchaRef} />
 
       <p
         style={{
@@ -230,6 +302,17 @@ export function SignupForm() {
         </a>
         .
       </p>
+
+      <style jsx>{`
+        .nick-spin {
+          animation: nick-rot 0.8s linear infinite;
+        }
+        @keyframes nick-rot {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </form>
   );
 }
@@ -237,21 +320,33 @@ export function SignupForm() {
 function Field({
   label,
   error,
+  hint,
+  hintTone = "muted",
   children,
 }: {
   label: string;
   error?: string;
+  hint?: string;
+  hintTone?: "muted" | "ok" | "err";
   children: React.ReactNode;
 }) {
+  const hintColor =
+    hintTone === "ok"
+      ? "#86e0b8"
+      : hintTone === "err"
+      ? "#ff9a9a"
+      : "var(--text-tertiary)";
   return (
     <div style={{ marginBottom: 16 }}>
       <label className="field-label">{label}</label>
       {children}
-      {error && (
+      {error ? (
         <p className="field-error" role="alert">
           {error}
         </p>
-      )}
+      ) : hint ? (
+        <p style={{ color: hintColor, fontSize: 13, marginTop: 6 }}>{hint}</p>
+      ) : null}
     </div>
   );
 }

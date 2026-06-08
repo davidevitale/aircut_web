@@ -3,7 +3,8 @@ import { Logo } from "./Logo";
 
 export function Footer() {
   return (
-    <footer style={{ borderTop: "1px solid var(--border-glass)", marginTop: 0 }}>
+    <footer style={{ marginTop: 0 }}>
+      <hr className="glass-divider" />
       <div
         className="container"
         style={{ paddingTop: 48, paddingBottom: 48 }}

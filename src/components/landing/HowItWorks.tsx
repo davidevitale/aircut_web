@@ -68,9 +68,8 @@ export function HowItWorks() {
           {steps.map((step, i) => (
             <Reveal key={step.title} delay={i * 0.08}>
               <article
-                className="glass"
+                className="glass glass-card"
                 style={{
-                  borderRadius: "var(--radius-card)",
                   padding: "32px 28px",
                   height: "100%",
                   display: "flex",

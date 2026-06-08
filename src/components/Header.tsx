@@ -4,14 +4,7 @@ import { Logo } from "./Logo";
 export function Header() {
   return (
     <header className="sticky top-0 z-50">
-      <div
-        className="glass"
-        style={{
-          borderLeft: "none",
-          borderRight: "none",
-          borderTop: "none",
-        }}
-      >
+      <div className="glass-bar">
         <nav
           className="container flex items-center justify-between"
           style={{ height: 64 }}
@@ -33,7 +26,7 @@ export function Header() {
               Prezzi
             </Link>
             <Link href="/iscriviti" className="btn-primary" style={{ padding: "10px 20px", fontSize: 15 }}>
-              Inizia gratis
+              Dimostra chi sei
             </Link>
           </div>
         </nav>

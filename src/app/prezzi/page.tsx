@@ -36,8 +36,8 @@ export default function PrezziPage() {
       </div>
 
       <div
-        className="glass-strong"
-        style={{ borderRadius: "var(--radius-card)", padding: "32px 28px" }}
+        className="glass-strong glass-card"
+        style={{ padding: "32px 28px" }}
       >
         <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 16 }}>
           {included.map((item) => (
@@ -71,7 +71,7 @@ export default function PrezziPage() {
           className="btn-primary"
           style={{ width: "100%", marginTop: 30, fontSize: 16 }}
         >
-          Inizia gratis
+          Dimostra chi sei
         </Link>
         <p
           style={{

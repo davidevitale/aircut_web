@@ -28,7 +28,9 @@ export function ClosingCTA() {
                   marginInline: "auto",
                 }}
               >
-Se sei bravo, dimostralo. Se non lo sei, lascia stare.
+                Se sei bravo, dimostralo.
+                <br />
+                Se fai schifo, lascia stare.
               </h2>
               <div style={{ marginTop: 34 }}>
                 <Link
@@ -36,7 +38,7 @@ Se sei bravo, dimostralo. Se non lo sei, lascia stare.
                   className="btn-primary"
                   style={{ fontSize: 17, padding: "16px 34px" }}
                 >
-                  Inizia gratis · 1 mese
+                  Dimostra chi sei
                 </Link>
               </div>
             </div>
